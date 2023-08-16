@@ -1,0 +1,41 @@
+﻿<Window x:Class="SBModuleWorkDB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SBModuleWorkDB"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid Margin="2">
+        <DataGrid x:Name="gridView"
+                  IsSynchronizedWithCurrentItem="True"
+                  ItemsSource="{Binding}"
+                  SelectionMode="Single"
+                  AutoGenerateColumns="false"
+                  IsReadOnly="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="id"
+                                    Binding="{Binding Id}"
+                                    Header="ID"
+                                    IsReadOnly="True"/>
+                <DataGridTextColumn x:Name="secondName"
+                                    Binding="{Binding SecondName}"
+                                    Header="Second Name"/>
+                <DataGridTextColumn x:Name="name"
+                                    Binding="{Binding Name}"
+                                    Header="Name"/>
+                <DataGridTextColumn x:Name="patronymic"
+                                    Binding="{Binding Patronymic}"
+                                    Header="Patronymic"/>
+                <DataGridTextColumn x:Name="phone"
+                                    Binding="{Binding Number}"
+                                    Header="Phone Number"/>
+                <DataGridTextColumn x:Name="email"
+                                    Binding="{Binding Email}"
+                                    Header="Email"/>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+                  
+    </Grid>
+</Window>
