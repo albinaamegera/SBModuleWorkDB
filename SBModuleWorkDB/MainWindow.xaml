@@ -12,12 +12,12 @@
                   ItemsSource="{Binding}"
                   SelectionMode="Single"
                   AutoGenerateColumns="false"
-                  IsReadOnly="False">
+                  IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="id"
                                     Binding="{Binding Id}"
                                     Header="ID"
-                                    IsReadOnly="True"/>
+                                    />
                 <DataGridTextColumn x:Name="secondName"
                                     Binding="{Binding SecondName}"
                                     Header="Second Name"/>
@@ -34,6 +34,14 @@
                                     Binding="{Binding Email}"
                                     Header="Email"/>
             </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add new" Click="AddNewMenuItem"/>
+                    <MenuItem Header="Edit" Click="EditMenuItem"/>
+                    <MenuItem Header="Delete" Click="DeleteMenuItem"/>
+                    <MenuItem Header="Orders" Click="ShowOrders"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
             
         </DataGrid>
                   

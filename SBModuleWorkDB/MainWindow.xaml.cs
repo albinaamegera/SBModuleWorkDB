@@ -13,9 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Data.SqlClient;
-using System.Data.OleDb;
-using System.Data;
-using System.Threading;
+using System.Collections.ObjectModel;
+using System.Xml.Serialization;
 
 namespace SBModuleWorkDB
 {
@@ -24,10 +23,9 @@ namespace SBModuleWorkDB
     /// </summary>
     public partial class MainWindow : Window
     {
-        SqlConnection sqlConnection;
-        SqlDataAdapter sqlDAdapter;
-        DataTable dataTable;
-        DataRowView dataRView;
+        private ObservableCollection<Client> _clients;
+        private string _sqlConnectionString;
+        private string _sqlRequest;
         public MainWindow()
         {
             InitializeComponent();
@@ -35,10 +33,13 @@ namespace SBModuleWorkDB
         }
         private void Initialization()
         {
+            _clients = new ObservableCollection<Client>();
+            
+            // initialize sql connection to database
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder()
             {
-                DataSource = @"(localdb)\MSSQLLocalDB",
-                InitialCatalog = "SBModuleDB",
+                DataSource = MyData.localSqlSourse,
+                InitialCatalog = MyData.localSqlCatalog,
                 IntegratedSecurity = true,
                 ConnectTimeout = 30,
                 Encrypt = false,
@@ -46,16 +47,119 @@ namespace SBModuleWorkDB
                 ApplicationIntent = ApplicationIntent.ReadWrite,
                 MultiSubnetFailover = false
             };
-            sqlConnection = new SqlConnection(builder.ConnectionString);
-            sqlDAdapter = new SqlDataAdapter();
-            dataTable = new DataTable();
 
-            var sql = @"select * from Clients order by Clients.Id";
-            sqlDAdapter.SelectCommand = new SqlCommand(sql, sqlConnection);
+            _sqlConnectionString = builder.ConnectionString;
 
-            sqlDAdapter.Fill(dataTable);
-            gridView.DataContext = dataTable.DefaultView;
+            using (SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
+            {
+                sqlConnection.Open();
+                _sqlRequest = @"SELECT * FROM Clients ORDER BY Clients.Id";
+                SqlCommand cmd = new SqlCommand(_sqlRequest, sqlConnection);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var id = reader["Id"].ToString();
+                    var secondName = reader["SecondName"].ToString();
+                    var name = reader["Name"].ToString();
+                    var patr = reader["Patronymic"].ToString();
+                    var number = reader["Number"].ToString();
+                    var email = reader["Email"].ToString();
+                    _clients.Add(new Client(Int32.Parse(id), secondName, name, patr, number, email));
+                }
+            }
+            gridView.DataContext = _clients;
+
+            NpgSqlManager.Init();
+            try
+            {
+                NpgSqlManager.OpenConnection();
+            } 
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
-        
+        private void AddNewMenuItem(object sender, RoutedEventArgs e)
+        {
+            ClientInfo window = new ClientInfo(_clients.Last(), WindowType.AddNew);
+            window.GetResult += (c) =>
+            {
+                _clients.Add(c);
+                Insert(c);
+                window.Close();
+            };
+            window.Show();
+        }
+        private void EditMenuItem(object sender, RoutedEventArgs e)
+        {
+            if (gridView.SelectedItem == null)
+            {
+                MessageBox.Show("none client selected !");
+                return;
+            }
+            ClientInfo window = new ClientInfo(_clients[gridView.SelectedIndex], WindowType.Edit);
+            window.GetResult += (c) =>
+            {
+                _clients[gridView.SelectedIndex].Rewrite(c);
+                Update(c);
+                window.Close();
+            };
+            window.Show();
+        }
+        private void DeleteMenuItem(object sender, RoutedEventArgs e)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
+            {
+                sqlConnection.Open();
+                _sqlRequest = @"DELETE FROM Clients WHERE [Id] = @id";
+                SqlCommand cmd = new SqlCommand(_sqlRequest, sqlConnection);
+                cmd.Parameters.AddWithValue("@id", _clients[gridView.SelectedIndex].Id);
+                cmd.ExecuteNonQuery();
+            }
+            _clients.RemoveAt(gridView.SelectedIndex);
+        }
+        private void ShowOrders(object sender, RoutedEventArgs e)
+        {
+            
+        }
+        private void Update(Client client)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
+            {
+                sqlConnection.Open();
+                _sqlRequest = @"UPDATE Clients SET SecondName = @secondname, 
+                                                   [Name] = @name, 
+                                                   Patronymic = @patronymic, 
+                                                   Number = @number, 
+                                                   Email = @email 
+                                WHERE Id = @id";
+                SqlCommand cmd = new SqlCommand(_sqlRequest, sqlConnection);
+                cmd.Parameters.AddWithValue("@id", client.Id);
+                cmd.Parameters.AddWithValue("@secondname", client.SecondName);
+                cmd.Parameters.AddWithValue("@name", client.Name);
+                cmd.Parameters.AddWithValue("@patronymic", client.Patronymic);
+                cmd.Parameters.AddWithValue("@number", client.Number);
+                cmd.Parameters.AddWithValue("@email", client.Email);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        private void Insert(Client client)
+        {
+            using(SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
+            {
+                sqlConnection.Open();
+                _sqlRequest = @"INSERT INTO Clients ([SecondName], [Name], [Patronymic], [Number], [Email])
+                                VALUES (@secondname, @name, @patronymic, @number, @email)
+                                SET @id = @@IDENTITY";
+                SqlCommand cmd = new SqlCommand(_sqlRequest, sqlConnection);
+                cmd.Parameters.AddWithValue("@id", client.Id);
+                cmd.Parameters.AddWithValue("@secondname", client.SecondName);
+                cmd.Parameters.AddWithValue("@name", client.Name);
+                cmd.Parameters.AddWithValue("@patronymic", client.Patronymic);
+                cmd.Parameters.AddWithValue("@number", client.Number);
+                cmd.Parameters.AddWithValue("@email", client.Email);
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }
