@@ -8,14 +8,55 @@
         Title="OrderInfo" 
         ResizeMode="NoResize"
         SizeToContent="WidthAndHeight"
-        MinHeight="200"
-        MinWidth="300">
+        MinHeight="300"
+        MinWidth="400"
+        WindowStartupLocation="CenterScreen">
     <Grid Margin="2">
+        <Grid.Resources>
+            <Style TargetType="Label">
+                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontWeight" Value="DemiBold"/>
+                <Setter Property="HorizontalAlignment" Value="Right"/>
+            </Style>
+            <Style TargetType="TextBox">
+                <Setter Property="Margin" Value="0, 4, 0, 0"/>
+                <Setter Property="Height" Value="20"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="10*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Vertical"
+                    Grid.Column="0">
+            <Label Content="Code"/>
+            <Label Content="Product Name"/>
+        </StackPanel>
+        <StackPanel Orientation="Vertical"
+                    Grid.Column="1">
+            <TextBox x:Name="code"/>
+            <TextBox x:Name="productName"/>
+        </StackPanel>
+        <Button x:Name="addButton"
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                Margin="5"
+                Click="CreateNewOrder">
+            <TextBlock Text="New Order"
+                       FontSize="12"/>
+        </Button>
         <DataGrid x:Name="gridView"
                   IsSynchronizedWithCurrentItem="True"
                   IsReadOnly="True"
                   ItemsSource="{Binding}"
-                  AutoGenerateColumns="False">
+                  AutoGenerateColumns="False"
+                  Grid.Row="1"
+                  Grid.ColumnSpan="3">
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="id"
                                     Binding="{Binding Id}"
@@ -30,11 +71,6 @@
                                     Binding="{Binding Product}"
                                     Header="Product"/>
             </DataGrid.Columns>
-            <DataGrid.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="New order" Click="CreateNewOrder"/>
-                </ContextMenu>
-            </DataGrid.ContextMenu>
         </DataGrid>
         
     </Grid>

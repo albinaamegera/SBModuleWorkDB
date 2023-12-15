@@ -113,6 +113,10 @@
     <Compile Include="OrderInfo.xaml.cs">
       <DependentUpon>OrderInfo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Order.cs" />
+    <Compile Include="Orders.xaml.cs">
+      <DependentUpon>Orders.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SBModuleDBDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -135,6 +139,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="OrderInfo.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Orders.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

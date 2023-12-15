@@ -7,8 +7,13 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Margin="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
         <DataGrid x:Name="gridView"
                   IsSynchronizedWithCurrentItem="True"
+                  Grid.Column="0"
                   ItemsSource="{Binding}"
                   SelectionMode="Single"
                   AutoGenerateColumns="false"
@@ -44,6 +49,14 @@
             </DataGrid.ContextMenu>
             
         </DataGrid>
-                  
+        <Button Grid.Column="1"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Stretch"
+                Margin="2"
+                MinHeight="30"
+                Click="SeeAllOrders">
+            <TextBlock Text="Orders journal"
+                       FontSize="16"/>
+        </Button>       
     </Grid>
 </Window>

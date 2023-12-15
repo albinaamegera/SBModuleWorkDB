@@ -70,14 +70,6 @@ namespace SBModuleWorkDB
             gridView.DataContext = _clients;
 
             NpgSqlManager.Init();
-            try
-            {
-                NpgSqlManager.OpenConnection();
-            } 
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
         }
         private void AddNewMenuItem(object sender, RoutedEventArgs e)
         {
@@ -92,15 +84,20 @@ namespace SBModuleWorkDB
         }
         private void EditMenuItem(object sender, RoutedEventArgs e)
         {
+            var index = gridView.SelectedIndex;
             if (gridView.SelectedItem == null)
             {
                 MessageBox.Show("none client selected !");
                 return;
             }
-            ClientInfo window = new ClientInfo(_clients[gridView.SelectedIndex], WindowType.Edit);
+            ClientInfo window = new ClientInfo(_clients[index], WindowType.Edit);
             window.GetResult += (c) =>
             {
-                _clients[gridView.SelectedIndex].Rewrite(c);
+                if (!_clients[index].Email.Equals(c.Email))
+                {
+                    NpgSqlManager.Update(_clients[index].Email, c.Email);
+                }
+                _clients[index].Rewrite(c);
                 Update(c);
                 window.Close();
             };
@@ -116,11 +113,18 @@ namespace SBModuleWorkDB
                 cmd.Parameters.AddWithValue("@id", _clients[gridView.SelectedIndex].Id);
                 cmd.ExecuteNonQuery();
             }
+            NpgSqlManager.Delete(_clients[gridView.SelectedIndex].Email);
             _clients.RemoveAt(gridView.SelectedIndex);
         }
         private void ShowOrders(object sender, RoutedEventArgs e)
         {
-            
+            OrderInfo window = new OrderInfo(_clients[gridView.SelectedIndex].Email);
+            window.Show();
+        }
+        private void SeeAllOrders(object sender, RoutedEventArgs e)
+        {
+            Orders window = new Orders();
+            window.Show();
         }
         private void Update(Client client)
         {
@@ -145,7 +149,7 @@ namespace SBModuleWorkDB
         }
         private void Insert(Client client)
         {
-            using(SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
+            using (SqlConnection sqlConnection = new SqlConnection(_sqlConnectionString))
             {
                 sqlConnection.Open();
                 _sqlRequest = @"INSERT INTO Clients ([SecondName], [Name], [Patronymic], [Number], [Email])
