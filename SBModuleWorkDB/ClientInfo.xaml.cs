@@ -58,7 +58,7 @@ namespace SBModuleWorkDB
             }
             else
             {
-                int id = _type == WindowType.AddNew ? _currentClient.Id + 1 : _currentClient.Id;
+                int id = _type == WindowType.AddNew ? Repository.Clients.Count : Repository.Clients.Count - 1;
                 var client = new Client(id, secondname.Text, name.Text, patronymic.Text, number.Text, email.Text);
                 GetResult?.Invoke(client);
             }

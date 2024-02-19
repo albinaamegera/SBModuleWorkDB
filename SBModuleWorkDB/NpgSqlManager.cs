@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Npgsql;
 
 namespace SBModuleWorkDB
@@ -26,6 +27,7 @@ namespace SBModuleWorkDB
             };
             _connectionString = npgBuilder.ConnectionString;
             _dataSourse = NpgsqlDataSource.Create(_connectionString);
+            var connection = _dataSourse.CreateConnection();
         }
         public static List<Order> Select()
         {

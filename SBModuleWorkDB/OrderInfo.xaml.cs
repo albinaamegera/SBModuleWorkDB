@@ -25,10 +25,10 @@ namespace SBModuleWorkDB
         public OrderInfo(string email)
         {
             InitializeComponent();
-            InitializeWnidow(email);
+            InitializeWindow(email);
             
         }
-        private void InitializeWnidow(string email)
+        private void InitializeWindow(string email)
         {
             _orders = new ObservableCollection<Order>();
             _currentEmail = email;

@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
+using System.Security.Cryptography;
+using System.Windows.Markup;
 
 namespace SBModuleWorkDB
 {
@@ -10,6 +8,7 @@ namespace SBModuleWorkDB
     {
         public static readonly string localSqlSourse = @"(localdb)\MSSQLLocalDB";
         public static readonly string localSqlCatalog = "SBModuleDB";
-        public static readonly string localSqlCatalog1 = "SBModuleSecondDB";
+        public static readonly string attachDbFilename = @"C:\Users\user\Documents\GitHub\SBModuleWorkDB\SBModuleWorkDB\DB(.mdf)\SBModuleDB.mdf";
+        
     }
 }
